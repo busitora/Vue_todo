@@ -1,5 +1,7 @@
 require 'rails_helper'
 RSpec.describe 'タスク管理', type: :system do
+  let(:task) { create(:task) }
+
   describe do
     context 'トップページが表示されている' do
       it 'トップページにはじめるボタンが表示されている' do
@@ -23,6 +25,14 @@ RSpec.describe 'タスク管理', type: :system do
         visit '/tasks'
         click_link '戻る'
         expect(current_path).to eq('/'), 'トップページに遷移できていません'
+      end
+
+      it '作成したタスクがタスクページに表示されている' do
+        create(:task, title: 'Rubyのサンプルコードを書く')
+        create(:task, title: 'Dockerを勉強する')
+        visit '/tasks'
+        expect(page).to have_content('Rubyのサンプルコードを書く'), '作成したタスクがタスクページに表示されていません'
+        expect(page).to have_content('Dockerを勉強する'), '作成したタスクがタスクページに表示されていません'
       end
     end
   end

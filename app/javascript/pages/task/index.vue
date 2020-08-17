@@ -20,24 +20,21 @@
 		data() {
 			return {
 				title: "タスク管理アプリ",
-				tasks: [
-					{
-						id: 1,
-						title: "スーパに買い物に行く"
-					},
-					{
-						id: 2,
-						title: "子供の迎えに行く"
-					},
-					{
-						id: 3,
-						title: "新聞を解約する"
-					},
-					{
-						id: 4,
-						title: "ゴミ出しをする"
-					},
-				]
+				tasks: []
+			}
+		},
+		created() {
+			// 最初のリロード時、インスタンスが生成され、データが初期化された後
+			this.fetchTasks();
+		},
+		methods: {
+			fetchTasks() {
+				this.$axios.get("tasks")
+          // baseURLでapiまで指定してある
+					.then(res => this.tasks = res.data)
+					// .then(res => console.log(res)) //でデバッグ
+          // 成功した処理 (ES6のpromise?)を返す
+					.catch(err => console.log(err.status));
 			}
 		}
 	}

@@ -8,9 +8,12 @@
 import Vue from 'vue'
 import App from '../app.vue'
 import router from '../router'
+import axios from '../plugins/axios' // 自作したaxiosインスタンスを読み込み
 import 'bootstrap/dist/css/bootstrap.css'
 
 Vue.config.productionTip = false
+Vue.prototype.$axios = axios
+// aliasにし、それをprototypeに入れている
 
 document.addEventListener('DOMContentLoaded', () => {
   const app = new Vue({
