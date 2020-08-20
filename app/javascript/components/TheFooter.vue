@@ -1,6 +1,6 @@
 <template>
   <footer class="text-center">
-    <small>Copyright &copy; 2020. RUNTEQ</small>
+    <small>Copyright &copy; 2020. RUNTEQ with busitora</small>
   </footer>
 </template>
 
