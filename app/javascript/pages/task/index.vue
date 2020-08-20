@@ -12,6 +12,7 @@
         >
           <span>{{ task.title }}</span>
         </div>
+        <button class="btn btn-secondary" @click="handleShowTaskCreateModal">タスクを追加</button>
       </div>
     </div>
     <div class="text-center">
@@ -22,38 +23,56 @@
       <!-- :task="taskDetail" で 子にtaskを渡してる-->
     </transition>
     <!-- トランジションで管理 nameをつけて管理、今回はfade。nameをつけないと、v-という名前になるが非推奨-->
+    <transition name="fade">
+      <TaskCreateModal
+        v-if="isVisibleTaskCreateModal"
+        @close-modal="handleCloseTaskCreateModal"
+        @create-task="handleCreateTask"
+      />
+    </transition>
   </div>
 </template>
 
 <script>
 	import TaskDetailModal from "./components/TaskDetailModal"
+	import {mapGetters, mapActions} from "vuex"
+	import TaskCreateModal from "./components/TaskCreateModal"
 
 	export default {
 		name: "TaskIndex",
 		components: {
-			TaskDetailModal
+			TaskDetailModal,
+			TaskCreateModal
 		},
 		data() {
 			return {
 				title: "タスク管理アプリ",
-				tasks: [],
 				taskDetail: {},
-				isVisibleTaskDetailModal: false
+				isVisibleTaskDetailModal: false,
+				isVisibleTaskCreateModal: false
 			}
+		},
+		computed: {
+			...mapGetters(["tasks"]),
+    //  ... はスプレット演算子 this.$store.getters['tasks'] と書かずに取得できるので楽
 		},
 		created() {
 			// 最初のリロード時、インスタンスが生成され、データが初期化された後
 			this.fetchTasks();
 		},
 		methods: {
-			fetchTasks() {
-				this.$axios.get("tasks")
-				// baseURLでapiまで指定してある
-					.then(res => this.tasks = res.data)
-					// .then(res => console.log(res)) //でデバッグ
-					// 成功した処理 (ES6のpromise?)を返す
-					.catch(err => console.log(err.status));
-			},
+			// fetchTasks() {
+			// 	this.$axios.get("tasks")
+			// 	// baseURLでapiまで指定してある
+			// 		.then(res => this.tasks = res.data)
+			// 		// .then(res => console.log(res)) //でデバッグ
+			// 		// 成功した処理 (ES6のpromise?)を返す
+			// 		.catch(err => console.log(err.status));
+			// },
+			...mapActions([
+				"fetchTasks",
+				"createTask"
+			]),
 			handleShowTaskDetailModal(task) {
 				this.isVisibleTaskDetailModal = true;
 				this.taskDetail = task;
@@ -61,6 +80,20 @@
 			handleCloseTaskDetailModal() {
 				this.isVisibleTaskDetailModal = false;
 				this.taskDetail = {};
+			},
+			handleShowTaskCreateModal() {
+				this.isVisibleTaskCreateModal = true;
+			},
+			handleCloseTaskCreateModal() {
+				this.isVisibleTaskCreateModal = false;
+			},
+			async handleCreateTask(task) {
+				try {
+					await this.createTask(task)
+					this.handleCloseTaskCreateModal()
+				} catch (error) {
+					console.log(error)
+				}
 			}
 		}
 	}
