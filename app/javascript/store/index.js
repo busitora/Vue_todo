@@ -21,12 +21,23 @@ export default new Vuex.Store({
 		// mutationsでしかstateの変更を出来ないようにしている。どのコンポートでもstateを変更できると、どこでstate が変わるか予測できなくなるので危ない
 		// 第1引数は state 第2引数 は 任意
 		// mutationは同期的にしか書けない
-		setTasks: (state, tasks) => {
+		set_Tasks: (state, tasks) => {
 			state.tasks = tasks
 		},
-		addTask: (state, task) => {
+		add_Task: (state, task) => {
 			state.tasks.push(task)
-		}
+		},
+		delete_Task: (state, deleteTask) => {
+			state.tasks = state.tasks.filter(task => {
+				return task.id != deleteTask.id
+			})
+		},
+		update_Task: (state, updateTask) => {
+			const index = state.tasks.findIndex(task => {
+				return task.id == updateTask.id
+			})
+			state.tasks.splice(index, 1, updateTask)
+		},
 	},
 
 	actions: {
@@ -34,7 +45,7 @@ export default new Vuex.Store({
 			axios.get('tasks')
 				.then(res => {
 					// baseURLでapiまで指定してある
-					commit('setTasks', res.data)
+					commit('set_Tasks', res.data)
 					// .then(res => console.log(res)) //でデバッグ
 				})
 				.catch(err => console.log(err.response));
@@ -42,7 +53,19 @@ export default new Vuex.Store({
 		createTask({commit}, task) {
 			return axios.post('tasks', task)
 				.then(res => {
-					commit('addTask', res.data)
+					commit('add_Task', res.data)
+				})
+		},
+		deleteTask({commit}, task) {
+			return axios.delete(`tasks/${task.id}`)
+				.then(res => {
+					commit('delete_Task', res.data)
+				})
+		},
+		updateTask({commit}, task) {
+			return axios.patch(`tasks/${task.id}`, task)
+				.then(res => {
+					commit('update_Task', res.data)
 				})
 		}
 	},
