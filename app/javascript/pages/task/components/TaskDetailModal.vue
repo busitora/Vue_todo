@@ -14,6 +14,8 @@
             <p>{{ task.description }}</p>
           </div>
           <div class="modal-footer">
+            <button type="button" class="btn btn-success" @click="handleShowTaskEditModal">編集</button>
+            <button type="button" class="btn btn-danger" @click="handleDeleteTask">削除</button>
             <button type="button" class="btn btn-secondary" @click="handleCloseModal">閉じる</button>
           </div>
         </div>
@@ -42,7 +44,13 @@
 			handleCloseModal() {
 				this.$emit('close-modal')
 				// $emitを使って親の@closeModalに設定されているメソッドを実行させることができる。スネークケースとキャメルケースの変換は自動で行ってくれる。
-			}
+			},
+			handleShowTaskEditModal() {
+				this.$emit('show-edit-modal', this.task)
+			},
+			handleDeleteTask() {
+				this.$emit('delete-task', this.task)
+			},
 		}
 	}
 </script>
